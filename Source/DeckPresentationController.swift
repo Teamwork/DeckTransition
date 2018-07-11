@@ -27,6 +27,8 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
     private var isSwipeToDismissGestureEnabled = true
     private var pan: UIPanGestureRecognizer?
     private var scrollViewUpdater: ScrollViewUpdater?
+
+    private var tap: UITapGestureRecognizer?
     
     private let backgroundView = UIView()
     private let roundedViewForPresentingView = RoundedView()
@@ -284,6 +286,9 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
             pan!.cancelsTouchesInView = false
             presentedViewController.view.addGestureRecognizer(pan!)
         }
+        
+        tap = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        roundedViewForPresentingView.addGestureRecognizer(tap!)
 
         presentCompletion?(completed)
     }
@@ -609,6 +614,12 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
         default: break
         
         }
+    }
+
+    @objc private func handleTap(gestureRecognizer: UITapGestureRecognizer) {
+        guard gestureRecognizer.isEqual(tap) else { return }
+
+        presentedViewController.dismiss(animated: true, completion: nil)
     }
     
     /// Method to update the modal view for a particular amount of translation
