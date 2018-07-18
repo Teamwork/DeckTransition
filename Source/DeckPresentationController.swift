@@ -27,6 +27,8 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
     private var isSwipeToDismissGestureEnabled = true
     private var pan: UIPanGestureRecognizer?
     private var scrollViewUpdater: ScrollViewUpdater?
+
+    private var tap: UITapGestureRecognizer?
     
     private let backgroundView = UIView()
     private let roundedViewForPresentingView = RoundedView()
@@ -75,6 +77,26 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
     }
     
     // MARK: - Sizing
+
+    private lazy var modalHeight: CGFloat = {
+        guard let containerView = containerView else { return 0 }
+
+        let contentHeight: CGFloat
+        if  let navController = presentedViewController as? UINavigationController,
+            let rootViewController = navController.viewControllers.first {
+
+            let rootVCSize = rootViewController.view.systemLayoutSizeFitting(CGSize(width: containerView.bounds.width, height: 0))
+            let navBarSize = navController.navigationBar.bounds.size
+            contentHeight = rootVCSize.height + navBarSize.height
+        } else {
+
+            let presentedVCSize = presentedViewController.view.systemLayoutSizeFitting(CGSize(width: containerView.bounds.width, height: 0))
+            contentHeight = presentedVCSize.height
+        }
+
+        let fullHeight = containerView.bounds.height - (ManualLayout.presentingViewTopInset + Constants.insetForPresentedView)
+        return contentHeight > 0 ? min(fullHeight, contentHeight) : fullHeight
+    }()
     
     private var statusBarHeight: CGFloat {
         return UIApplication.shared.statusBarFrame.height
@@ -92,13 +114,11 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
         guard let containerView = containerView else {
             return .zero
         }
-        
-        let yOffset = ManualLayout.presentingViewTopInset + Constants.insetForPresentedView
-        
+
         return CGRect(x: 0,
-                      y: yOffset,
+                      y: containerView.bounds.height - modalHeight,
                       width: containerView.bounds.width,
-                      height: containerView.bounds.height - yOffset)
+                      height: modalHeight)
     }
 	
 	// MARK: - Presentation
@@ -266,6 +286,9 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
             pan!.cancelsTouchesInView = false
             presentedViewController.view.addGestureRecognizer(pan!)
         }
+        
+        tap = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        roundedViewForPresentingView.addGestureRecognizer(tap!)
 
         presentCompletion?(completed)
     }
@@ -592,6 +615,12 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
         
         }
     }
+
+    @objc private func handleTap(gestureRecognizer: UITapGestureRecognizer) {
+        guard gestureRecognizer.isEqual(tap) else { return }
+
+        presentedViewController.dismiss(animated: true, completion: nil)
+    }
     
     /// Method to update the modal view for a particular amount of translation
     /// by panning in the vertical direction.
@@ -608,8 +637,8 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
     ///   the container view in the vertical direction
     private func updatePresentedViewForTranslation(inVerticalDirection translation: CGFloat) {
         
-        let elasticThreshold: CGFloat = 120
-        let dismissThreshold: CGFloat = 240
+        let elasticThreshold: CGFloat = modalHeight / 6
+        let dismissThreshold: CGFloat = modalHeight / 3
         
         let translationFactor: CGFloat = 1/2
         
