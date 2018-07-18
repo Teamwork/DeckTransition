@@ -10,7 +10,7 @@ Pod::Spec.new do |spec|
   spec.author           = { 'Harshil Shah' => 'harshilshah1910@me.com' }
   spec.social_media_url = 'https://twitter.com/harshilshah1910'
 
-  spec.source           = { :git => 'https://github.com/rkreutz-teamwork/DeckTransition.git', :tag => spec.version.to_s }
+  spec.source           = { :git => 'https://github.com/Teamwork/decktransition-fork-ios.git', :tag => spec.version.to_s }
   spec.source_files     = 'Source/**/*.{h,swift}'
 
   spec.framework        = 'UIKit'
