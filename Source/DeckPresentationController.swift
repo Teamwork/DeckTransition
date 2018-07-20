@@ -666,9 +666,10 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
     // MARK: - UIGestureRecognizerDelegate methods
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        guard gestureRecognizer.isEqual(pan) else {
-            return false
-        }
+        guard
+            gestureRecognizer.isEqual(pan),
+            !(otherGestureRecognizer is UIPanGestureRecognizer)
+            else { return false }
         
         return true
     }
