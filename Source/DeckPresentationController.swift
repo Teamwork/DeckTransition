@@ -81,7 +81,7 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
     private lazy var modalHeight: CGFloat = {
         guard let containerView = containerView else { return 0 }
 
-        let contentHeight: CGFloat
+        var contentHeight: CGFloat
         if  let navController = presentedViewController as? UINavigationController,
             let rootViewController = navController.viewControllers.first {
 
@@ -92,6 +92,11 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
 
             let presentedVCSize = presentedViewController.view.systemLayoutSizeFitting(CGSize(width: containerView.bounds.width, height: 0))
             contentHeight = presentedVCSize.height
+        }
+        
+        if #available(iOS 11, *) {
+            
+            contentHeight += containerView.safeAreaInsets.bottom
         }
 
         let fullHeight = containerView.bounds.height - (ManualLayout.presentingViewTopInset + Constants.insetForPresentedView)
