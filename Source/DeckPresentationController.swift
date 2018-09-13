@@ -112,7 +112,7 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
             return 0
         }
         
-        return 1 - (ManualLayout.presentingViewTopInset * 2 / containerView.frame.height)
+        return 1 - max((ManualLayout.presentingViewTopInset * 2 / containerView.frame.height), (2 * Constants.cornerRadius / containerView.frame.width))
     }
 	
     override var frameOfPresentedViewInContainerView: CGRect {
@@ -179,10 +179,9 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
         let transformForSnapshotView = CGAffineTransform.identity
             .translatedBy(x: 0, y: -snapshotViewContainer.frame.origin.y)
             .translatedBy(x: 0, y: ManualLayout.presentingViewTopInset)
-            .translatedBy(x: 0, y: -snapshotViewContainer.frame.height / 2)
+			.translatedBy(x: 0, y: -(((1 - scaleForPresentingView) * snapshotViewContainer.frame.height) / 2))
             .scaledBy(x: scaleForPresentingView, y: scaleForPresentingView)
-            .translatedBy(x: 0, y: snapshotViewContainer.frame.height / 2)
-        
+
         /// For a recursive modal, the `presentingView` already has rounded
         /// corners so the animation must respect that
         roundedViewForPresentingView.backgroundColor = UIColor.black.withAlphaComponent(0)
@@ -206,6 +205,7 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
         /// case of recursive presentation
         var rootSnapshotView: UIView?
         var rootSnapshotRoundedView: RoundedView?
+		var rootSnapshotInitialTransform: CGAffineTransform = .identity
         
         if presentingViewController.isPresentedWithDeck {
             guard let rootController = presentingViewController.presentingViewController,
@@ -214,18 +214,25 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
                 return
             }
             
-            containerView.insertSubview(snapshotView, aboveSubview: backgroundView)
-            snapshotView.frame = initialFrame
-            snapshotView.transform = transformForSnapshotView
-            snapshotView.alpha = Constants.alphaForPresentingView
-            rootSnapshotView = snapshotView
-            
-            let snapshotRoundedView = RoundedView()
-            snapshotRoundedView.cornerRadius = Constants.cornerRadius
-            containerView.insertSubview(snapshotRoundedView, aboveSubview: snapshotView)
-            snapshotRoundedView.frame = initialFrame
-            snapshotRoundedView.transform = transformForSnapshotView
-            rootSnapshotRoundedView = snapshotRoundedView
+			rootSnapshotInitialTransform = CGAffineTransform.identity
+				.translatedBy(x: 0, y: -snapshotView.frame.origin.y)
+				.translatedBy(x: 0, y: ManualLayout.presentingViewTopInset)
+				.translatedBy(x: 0, y: -(((1 - scaleForPresentingView) * snapshotView.frame.height) / 2))
+				.scaledBy(x: scaleForPresentingView, y: scaleForPresentingView)
+
+			let snapshotRoundedView = RoundedView()
+			snapshotRoundedView.cornerRadius = Constants.cornerRadius
+			snapshotRoundedView.frame = snapshotView.frame
+			snapshotRoundedView.transform = rootSnapshotInitialTransform
+			rootSnapshotRoundedView = snapshotRoundedView
+
+			snapshotView.backgroundColor = .black
+			snapshotView.alpha = Constants.alphaForPresentingView
+			snapshotView.transform = rootSnapshotInitialTransform
+			rootSnapshotView = snapshotView
+
+			containerView.insertSubview(snapshotView, aboveSubview: backgroundView)
+			containerView.insertSubview(snapshotRoundedView, aboveSubview: snapshotView)
         }
         
         presentedViewController.transitionCoordinator?.animate(
@@ -235,6 +242,8 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
                 }
                 
                 self.presentAnimation?()
+				rootSnapshotView?.transform = rootSnapshotInitialTransform.scaledBy(x: self.scaleForPresentingView, y: self.scaleForPresentingView)
+				rootSnapshotRoundedView?.transform = rootSnapshotInitialTransform.scaledBy(x: self.scaleForPresentingView, y: self.scaleForPresentingView)
                 self.snapshotView?.transform = transformForSnapshotView
                 self.roundedViewForPresentingView.cornerRadius = Constants.cornerRadius
                 self.roundedViewForPresentingView.transform = transformForSnapshotView
@@ -493,10 +502,9 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
         let initialTransform = CGAffineTransform.identity
             .translatedBy(x: 0, y: -initialFrame.origin.y)
             .translatedBy(x: 0, y: ManualLayout.presentingViewTopInset)
-            .translatedBy(x: 0, y: -initialFrame.height / 2)
+			.translatedBy(x: 0, y: -(((1 - scaleForPresentingView) * initialFrame.height) / 2))
             .scaledBy(x: scaleForPresentingView, y: scaleForPresentingView)
-            .translatedBy(x: 0, y: initialFrame.height / 2)
-        
+
         roundedViewForPresentingView.translatesAutoresizingMaskIntoConstraints = true
         roundedViewForPresentingView.frame = initialFrame
         roundedViewForPresentingView.transform = initialTransform
@@ -511,6 +519,7 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
         let finalCornerRadius = presentingViewController.isPresentedWithDeck ? Constants.cornerRadius : 0
         let finalTransform: CGAffineTransform = .identity
         
+		var rootSnapshotTargetTransform: CGAffineTransform = .identity
         var rootSnapshotView: UIView?
         var rootSnapshotRoundedView: RoundedView?
         
@@ -520,19 +529,26 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
             else {
                 return
             }
-            
-            containerView.insertSubview(snapshotView, aboveSubview: backgroundView)
-            snapshotView.frame = initialFrame
-            snapshotView.transform = initialTransform
+
+			let targetTransform = CGAffineTransform.identity
+				.translatedBy(x: 0, y: -snapshotView.frame.origin.y)
+				.translatedBy(x: 0, y: ManualLayout.presentingViewTopInset)
+				.translatedBy(x: 0, y: -(((1 - scaleForPresentingView) * snapshotView.frame.height) / 2))
+				.scaledBy(x: scaleForPresentingView, y: scaleForPresentingView)
+			rootSnapshotTargetTransform = targetTransform
+
+			let snapshotRoundedView = RoundedView()
+			snapshotRoundedView.cornerRadius = Constants.cornerRadius
+			snapshotRoundedView.backgroundColor = UIColor.black.withAlphaComponent(1 - Constants.alphaForPresentingView)
+			snapshotRoundedView.frame = snapshotView.frame
+			snapshotRoundedView.transform = targetTransform.scaledBy(x: scaleForPresentingView, y: scaleForPresentingView)
+			rootSnapshotRoundedView = snapshotRoundedView
+
+			snapshotView.transform = targetTransform.scaledBy(x: scaleForPresentingView, y: scaleForPresentingView)
             rootSnapshotView = snapshotView
-            
-            let snapshotRoundedView = RoundedView()
-            snapshotRoundedView.cornerRadius = Constants.cornerRadius
-            snapshotRoundedView.backgroundColor = UIColor.black.withAlphaComponent(1 - Constants.alphaForPresentingView)
-            containerView.insertSubview(snapshotRoundedView, aboveSubview: snapshotView)
-            snapshotRoundedView.frame = initialFrame
-            snapshotRoundedView.transform = initialTransform
-            rootSnapshotRoundedView = snapshotRoundedView
+
+			containerView.insertSubview(snapshotView, aboveSubview: backgroundView)
+			containerView.insertSubview(snapshotRoundedView, aboveSubview: snapshotView)
         }
         
         presentedViewController.transitionCoordinator?.animate(
@@ -542,6 +558,8 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
                 }
                 
                 self.dismissAnimation?()
+				rootSnapshotView?.transform = rootSnapshotTargetTransform
+				rootSnapshotRoundedView?.transform = rootSnapshotTargetTransform
                 self.snapshotViewContainer.transform = finalTransform
                 self.roundedViewForPresentingView.transform = finalTransform
                 self.roundedViewForPresentingView.cornerRadius = finalCornerRadius
