@@ -8,7 +8,7 @@
 
 import UIKit
 
-final class DeckPresentationController: UIPresentationController, UIGestureRecognizerDelegate, DeckSnapshotUpdater {
+final class DeckPresentationController: UIPresentationController, UIGestureRecognizerDelegate, DeckSnapshotUpdater, DeckViewExpander {
     
     // MARK: - Internal variables
     
@@ -276,8 +276,33 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
         guard let containerView = containerView else {
             return
         }
-        
-        presentedViewController.view.frame = frameOfPresentedViewInContainerView
+
+		presentedViewController.view.translatesAutoresizingMaskIntoConstraints = false
+		NSLayoutConstraint.activate([
+			presentedViewController.view.topAnchor.constraint(greaterThanOrEqualTo: containerView.topAnchor, constant: ManualLayout.presentingViewTopInset + Constants.insetForPresentedView),
+			presentedViewController.view.widthAnchor.constraint(equalTo: containerView.widthAnchor),
+			presentedViewController.view.leadingAnchor.constraint(equalTo: containerView.leadingAnchor)
+		])
+
+		/// The height priority should be high enough so it can take effect, but should be smaller than all other constraints so we can
+		/// guarantee it won't be bigger than what the container view permits
+		let heightConstraint = presentedViewController.view.heightAnchor.constraint(equalToConstant: modalHeight)
+		heightConstraint.priority = .defaultHigh
+
+		/// The bottom constraint can't be required because when dismissing the view it conflicts with the autoresizing constraints,
+		/// but its priority should be higher than the height priority so the height doesn't grow out of the bounds of the container view.
+		let bottomConstraint = presentedViewController.view.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+		bottomConstraint.priority = UILayoutPriority(900)
+
+		NSLayoutConstraint.activate([heightConstraint, bottomConstraint])
+
+		NSLayoutConstraint.activate([
+			roundedViewForPresentedView.topAnchor.constraint(equalTo: presentedViewController.view.topAnchor),
+			roundedViewForPresentedView.leftAnchor.constraint(equalTo: presentedViewController.view.leftAnchor),
+			roundedViewForPresentedView.rightAnchor.constraint(equalTo: presentedViewController.view.rightAnchor),
+			roundedViewForPresentedView.bottomAnchor.constraint(equalTo: presentedViewController.view.bottomAnchor)
+		])
+		roundedViewForPresentedView.isUserInteractionEnabled = false
         
         snapshotViewContainer.transform = .identity
         snapshotViewContainer.translatesAutoresizingMaskIntoConstraints = false
@@ -490,6 +515,8 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
         guard let containerView = containerView else {
             return
         }
+
+		presentedViewController.view.translatesAutoresizingMaskIntoConstraints = true
         
         let initialFrame: CGRect = {
             if presentingViewController.isPresentedWithDeck {
@@ -696,5 +723,28 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
         
         return true
     }
-    
+
+	func expandView() {
+
+		presentedView?.constraints
+			.filter({ $0.firstItem === presentedView && $0.firstAttribute == .height })
+			.forEach({ $0.constant = containerView?.frame.height ?? 0 })
+
+		UIView.animate(withDuration: Constants.defaultAnimationDuration,
+					   delay: 0,
+					   options: .curveEaseInOut,
+					   animations: containerView?.layoutIfNeeded ?? presentedViewController.view.layoutIfNeeded)
+	}
+
+	func compressView() {
+
+		presentedView?.constraints
+			.filter({ $0.firstItem === presentedView && $0.firstAttribute == .height })
+			.forEach({ $0.constant = modalHeight })
+
+		UIView.animate(withDuration: Constants.defaultAnimationDuration,
+					   delay: 0,
+					   options: .curveEaseInOut,
+					   animations: containerView?.layoutIfNeeded ?? presentedViewController.view.layoutIfNeeded)
+	}
 }
