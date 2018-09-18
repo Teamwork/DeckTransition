@@ -724,6 +724,8 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
         return true
     }
 
+	// MARK: - DeckViewExpander conformance
+
 	func expandView() {
 
 		animateHeight(to: containerView?.frame.height ?? UIScreen.main.bounds.height)
