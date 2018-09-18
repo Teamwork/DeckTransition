@@ -726,21 +726,19 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
 
 	func expandView() {
 
-		presentedViewController.view.constraints
-			.filter({ $0.firstItem === presentedViewController.view && $0.firstAttribute == .height })
-			.forEach({ $0.constant = containerView?.frame.height ?? UIScreen.main.bounds.height })
-
-		UIView.animate(withDuration: Constants.defaultAnimationDuration,
-					   delay: 0,
-					   options: .curveEaseInOut,
-					   animations: containerView?.layoutIfNeeded ?? presentedViewController.view.layoutIfNeeded)
+		animateHeight(to: containerView?.frame.height ?? UIScreen.main.bounds.height)
 	}
 
 	func compressView() {
 
+		animateHeight(to: modalHeight)
+	}
+
+	private func animateHeight(to height: CGFloat) {
+
 		presentedViewController.view.constraints
 			.filter({ $0.firstItem === presentedViewController.view && $0.firstAttribute == .height })
-			.forEach({ $0.constant = modalHeight })
+			.forEach({ $0.constant = height })
 
 		UIView.animate(withDuration: Constants.defaultAnimationDuration,
 					   delay: 0,
