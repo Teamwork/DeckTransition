@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol DeckViewExpander {
+public protocol DeckViewExpander: AnyObject {
 
 	func expandView()
 	func compressView()
