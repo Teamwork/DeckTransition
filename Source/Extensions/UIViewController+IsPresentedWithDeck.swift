@@ -17,5 +17,9 @@ extension UIViewController {
             && modalPresentationStyle == .custom
             && presentingViewController != nil
     }
-    
+
+	public var deckViewExpander: DeckViewExpander? {
+
+		return presentationController as? DeckViewExpander
+	}
 }

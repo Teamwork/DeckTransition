@@ -32,6 +32,7 @@
 		E8B271641FD7E145009883B2 /* UIViewController+DeckTransitionViewControllerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B271631FD7E145009883B2 /* UIViewController+DeckTransitionViewControllerProtocol.swift */; };
 		E8B271661FD7E208009883B2 /* ScrollViewDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B271651FD7E208009883B2 /* ScrollViewDetector.swift */; };
 		E8B271681FD7E20F009883B2 /* ScrollViewUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B271671FD7E20F009883B2 /* ScrollViewUpdater.swift */; };
+		FCA4364D21512EA60034D38D /* DeckViewExpander.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA4364C21512EA60034D38D /* DeckViewExpander.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,6 +74,7 @@
 		E8B271631FD7E145009883B2 /* UIViewController+DeckTransitionViewControllerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+DeckTransitionViewControllerProtocol.swift"; sourceTree = "<group>"; };
 		E8B271651FD7E208009883B2 /* ScrollViewDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollViewDetector.swift; sourceTree = "<group>"; };
 		E8B271671FD7E20F009883B2 /* ScrollViewUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollViewUpdater.swift; sourceTree = "<group>"; };
+		FCA4364C21512EA60034D38D /* DeckViewExpander.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeckViewExpander.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,6 +118,7 @@
 		D93F1C9A1EAEDB6E009A7474 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				FCA4364C21512EA60034D38D /* DeckViewExpander.swift */,
 				E8683D871F344793005C7E9A /* DeckSegue.swift */,
 				E8683D851F34478A005C7E9A /* DeckTransitioningDelegate.swift */,
 				E8683D891F34479E005C7E9A /* DeckPresentationController.swift */,
@@ -307,6 +310,7 @@
 				E87B47281F6E799D004AA6C7 /* Corner.swift in Sources */,
 				E87B47261F6E7983004AA6C7 /* CGRect+Corners.swift in Sources */,
 				E8683D881F344793005C7E9A /* DeckSegue.swift in Sources */,
+				FCA4364D21512EA60034D38D /* DeckViewExpander.swift in Sources */,
 				E8B271641FD7E145009883B2 /* UIViewController+DeckTransitionViewControllerProtocol.swift in Sources */,
 				E8B271681FD7E20F009883B2 /* ScrollViewUpdater.swift in Sources */,
 				E8473CC81F698D3700852FE3 /* ManualLayout.swift in Sources */,
