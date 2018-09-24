@@ -287,12 +287,12 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
 		/// The height priority should be high enough so it can take effect, but should be smaller than all other constraints so we can
 		/// guarantee it won't be bigger than what the container view permits
 		let heightConstraint = presentedViewController.view.heightAnchor.constraint(equalToConstant: modalHeight)
-		heightConstraint.priority = .defaultHigh
+		heightConstraint.priority = UILayoutPriority(998)
 
 		/// The bottom constraint can't be required because when dismissing the view it conflicts with the autoresizing constraints,
 		/// but its priority should be higher than the height priority so the height doesn't grow out of the bounds of the container view.
 		let bottomConstraint = presentedViewController.view.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
-		bottomConstraint.priority = UILayoutPriority(900)
+		bottomConstraint.priority = UILayoutPriority(999)
 
 		NSLayoutConstraint.activate([heightConstraint, bottomConstraint])
 
