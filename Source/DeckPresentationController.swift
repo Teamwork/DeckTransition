@@ -736,6 +736,11 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
 		animateHeight(to: modalHeight)
 	}
 
+	func setModalHeight(to height: CGFloat) {
+
+		animateHeight(to: height)
+	}
+
 	private func animateHeight(to height: CGFloat) {
 
 		presentedViewController.view.constraints
