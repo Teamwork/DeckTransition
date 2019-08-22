@@ -8,7 +8,7 @@
 
 import UIKit
 
-extension UIViewController {
+public extension UIViewController {
     
     /// A Boolean value indicating whether the view controller is presented
     /// using Deck.
@@ -18,7 +18,7 @@ extension UIViewController {
             && presentingViewController != nil
     }
 
-	public var deckViewExpander: DeckViewExpander? {
+    var deckViewExpander: DeckViewExpander? {
 
 		return presentationController as? DeckViewExpander
 	}
