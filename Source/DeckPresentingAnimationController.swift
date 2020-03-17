@@ -36,7 +36,7 @@ final class DeckPresentingAnimationController: NSObject, UIViewControllerAnimate
         UIView.animate(
             withDuration: transitionDuration(using: transitionContext),
             delay: 0,
-            options: .curveEaseOut,
+            options: .curveEaseInOut,
             animations: {
                 presentedViewController.view.frame = finalFrameForPresentedView
             }, completion: { finished in
