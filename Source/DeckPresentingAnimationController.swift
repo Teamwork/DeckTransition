@@ -36,6 +36,8 @@ final class DeckPresentingAnimationController: NSObject, UIViewControllerAnimate
         UIView.animate(
             withDuration: transitionDuration(using: transitionContext),
             delay: 0,
+            usingSpringWithDamping: 0.8,
+            initialSpringVelocity: 2,
             options: .curveEaseInOut,
             animations: {
                 presentedViewController.view.frame = finalFrameForPresentedView
@@ -45,7 +47,7 @@ final class DeckPresentingAnimationController: NSObject, UIViewControllerAnimate
     }
     
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return duration ?? Constants.defaultAnimationDuration
+        return duration ?? Constants.defaultPresentAnimationDuration
     }
     
 }

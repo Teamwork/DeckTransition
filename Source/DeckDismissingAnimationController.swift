@@ -42,7 +42,9 @@ final class DeckDismissingAnimationController: NSObject, UIViewControllerAnimate
         UIView.animate(
             withDuration: transitionDuration(using: transitionContext),
             delay: 0,
-            options: .curveEaseOut,
+            usingSpringWithDamping: 0.8,
+            initialSpringVelocity: 2,
+            options: .curveEaseInOut,
             animations: {
                 presentedViewController.view.frame = offscreenFrame
             }, completion: { finished in
@@ -51,7 +53,7 @@ final class DeckDismissingAnimationController: NSObject, UIViewControllerAnimate
     }
     
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return duration ?? Constants.defaultAnimationDuration
+        return duration ?? Constants.defaultDismissAnimationDuration
     }
     
 }
