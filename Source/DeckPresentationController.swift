@@ -749,7 +749,7 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
 
 		UIView.animate(withDuration: Constants.defaultAnimationDuration,
 					   delay: 0,
-					   options: .curveEaseInOut,
+                       options: .curveLinear,
 					   animations: containerView?.layoutIfNeeded ?? presentedViewController.view.layoutIfNeeded)
 	}
 }
